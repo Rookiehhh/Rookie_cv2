@@ -26,8 +26,11 @@ def read_data(filepath):
 
 def draw_contourf(fig, ax, X, Y, data, name, title):
     ax.set_title(title)
+    ax.set_aspect(1)
     levels = np.linspace(np.min(data), np.max(data), 50)
+    # ax.contour(X, Y, data, levels=levels)
     cf = ax.contourf(X, Y, data, levels=levels)
+
     cbar = fig.colorbar(cf, ax=ax, )
     cbar.ax.set_title(name)
 
@@ -119,19 +122,23 @@ def run():
         os.mkdir(dir_path)
     data = read_data(f'pd.txt')
     x, y = data['X'], data["Y"]
+    dw = 1
+    xx, yy = x[dw:-dw, dw:-dw], y[dw:-dw, dw:-dw]
     vars = data.keys()
     for var in vars:
         fig, ax = plt.subplots(3, 2, figsize=(30, 20))
         ax = ax.reshape((-1, ))
-        raw_func  = lambda x: x
+        raw_func = lambda x: x
         raw_func.__name__ = str(var) + ' RAW'
         funcs = [raw_func,
                 sobel, scharr, kirsch, robinson, laplacian]
         fig.suptitle(var, size=20)
         for i, func in enumerate(funcs):
-            img = func(data[var])
-            draw_contourf(fig, ax[i], x, y, img, func.__name__, title=func.__name__)
+            img = func(data[var])[dw:-dw, dw:-dw]
+            img[img < np.max(img)*0.45] = 0
+            draw_contourf(fig, ax[i], xx, yy, img, func.__name__, title=func.__name__)
         plt.savefig(os.path.join(dir_path, f"{var}.png"))
+        # plt.show()
 
 
 if __name__ == '__main__':
