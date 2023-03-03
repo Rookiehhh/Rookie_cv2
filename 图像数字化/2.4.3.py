@@ -10,6 +10,7 @@ if __name__ == '__main__':
     img = cv2.imread(f"SWMF-GM-Meridian-P-Forecast-20170318180000.jpg", cv2.IMREAD_GRAYSCALE)
     print(type(img))
     print(img)
+    print(img.shape)
     # 显示图像
     cv2.imshow("img", img)
     cv2.waitKey(0)
